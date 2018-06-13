@@ -18,16 +18,35 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('client connected');
 
-  // emit a custom event to client
   socket.emit('newMessage', {
-    from: 'cat', 
-    text: 'can you meet me at the back door?',
-    createdAt: 333
+    from: 'admin',
+    text: 'welcome to the chat app',
+    createdAt: new Date().getTime()
+  });
+
+  // broadcast emits an event to everyone except for user who joins
+  socket.broadcast.emit('newMessage', {
+    from: 'admin',
+    text: 'new user joined',
+    createdAt: new Date().getTime()
   });
 
   // listens to custom event from the client
   socket.on('createMessage', (message) => {
     console.log(message);
+    // io.emit() emits an event to every single connection
+    // io.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: new Date().getTime()
+    // });
+
+    // broadcast emits an event to everyone except for user emitting it
+    socket.broadcast.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
   });
 
 
