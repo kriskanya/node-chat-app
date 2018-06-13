@@ -18,9 +18,22 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('client connected');
 
+  // emit a custom event to client
+  socket.emit('newMessage', {
+    from: 'cat', 
+    text: 'can you meet me at the back door?',
+    createdAt: 333
+  });
+
+  // listens to custom event from the client
+  socket.on('createMessage', (message) => {
+    console.log(message);
+  });
+
+
   socket.on('disconnect', () => {
     console.log('client disconnected');
   });
 });
 
-server.listen(port, () => console.log(`app listening on port ${port}`));
+server.listen(port, function() { console.log(`app listening on port ${port}` )});
